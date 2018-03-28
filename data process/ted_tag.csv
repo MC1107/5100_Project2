@@ -1,0 +1,417 @@
+"","tag","sum"
+"1","3d printing",3
+"2","activism",157
+"3","Addiction",5
+"4","adventure",48
+"5","advertising",10
+"6","Africa",105
+"7","aging",43
+"8","agriculture",36
+"9","AI",43
+"10","AIDS",16
+"11","aircraft",7
+"12","algorithm",38
+"13","alternative energy",37
+"14","Alzheimers",6
+"15","ancient world",22
+"16","animals",109
+"17","animation",16
+"18","Anthropocene",14
+"19","anthropology",23
+"20","ants",4
+"21","apes",3
+"22","archaeology",9
+"23","architecture",82
+"24","art",221
+"25","Asia",26
+"26","asteroid",5
+"27","astrobiology",11
+"28","astronomy",48
+"29","atheism",5
+"30","augmented reality",2
+"31","Autism spectrum disorder",10
+"32","bacteria",27
+"33","beauty",63
+"34","bees",11
+"35","behavioral economics",23
+"36","big bang",9
+"37","big problems",65
+"38","biodiversity",62
+"39","Bioethics",23
+"40","biology",189
+"41","biomechanics",30
+"42","biomimicry",22
+"43","biosphere",7
+"44","biotech",72
+"45","birds",12
+"46","Blindness",12
+"47","blockchain",3
+"48","body language",11
+"49","books",36
+"50","botany",15
+"51","brain",158
+"52","Brand",3
+"53","Brazil",10
+"54","Buddhism",7
+"55","bullying",7
+"56","business",348
+"57","cancer",47
+"58","capitalism",13
+"59","cars",20
+"60","cello",3
+"61","charter for compassion",8
+"62","chemistry",38
+"63","children",143
+"64","china",21
+"65","choice",42
+"66","Christianity",6
+"67","cities",123
+"68","climate change",87
+"69","cloud",1
+"70","code",25
+"71","cognitive science",58
+"72","collaboration",174
+"73","comedy",48
+"74","communication",191
+"75","community",148
+"76","compassion",35
+"77","complexity",18
+"78","composing",11
+"79","computers",111
+"80","conducting",7
+"81","consciousness",24
+"82","conservation",15
+"83","consumerism",22
+"84","corruption",22
+"85","cosmos",16
+"86","creativity",189
+"87","crime",44
+"88","Criminal Justice",10
+"89","CRISPR",4
+"90","crowdsourcing",9
+"91","culture",486
+"92","curiosity",30
+"93","cyborg",6
+"94","dance",25
+"95","dark matter",13
+"96","data",94
+"97","death",44
+"98","Debate",7
+"99","decision-making",36
+"100","deextinction",7
+"101","demo",53
+"102","democracy",47
+"103","depression",25
+"104","design",418
+"105","dinosaurs",10
+"106","disability",34
+"107","disaster relief",25
+"108","discovery",12
+"109","disease",79
+"110","DNA",46
+"111","driverless cars",9
+"112","drones",18
+"113","ebola",11
+"114","ecology",54
+"115","economics",164
+"116","education",153
+"117","Egypt",14
+"118","empathy",26
+"119","energy",52
+"120","engineering",111
+"121","entertainment",299
+"122","entrepreneur",64
+"123","environment",165
+"124","epidemiology",3
+"125","Europe",18
+"126","evil",2
+"127","evolution",68
+"128","evolutionary psychology",10
+"129","exoskeleton",6
+"130","exploration",100
+"131","extraterrestrial life",14
+"132","extreme sports",7
+"133","failure",14
+"134","faith",24
+"135","family",54
+"136","farming",10
+"137","fashion",14
+"138","fear",31
+"139","feminism",29
+"140","film",67
+"141","finance",17
+"142","fish",28
+"143","flight",15
+"144","food",57
+"145","Foreign Policy",8
+"146","forensics",3
+"147","friendship",11
+"148","funny",1
+"149","future",195
+"150","gaming",31
+"151","garden",23
+"152","gender",27
+"153","Gender equality",34
+"154","Gender spectrum",6
+"155","genetics",62
+"156","geology",6
+"157","glacier",4
+"158","global development",64
+"159","global issues",501
+"160","goal-setting",36
+"161","God",16
+"162","Google",10
+"163","government",93
+"164","grammar",2
+"165","green",73
+"166","guitar",17
+"167","Guns",6
+"168","hack",12
+"169","happiness",73
+"170","health",236
+"171","health care",132
+"172","hearing",5
+"173","heart health",15
+"174","history",146
+"175","HIV",6
+"176","Human body",10
+"177","human origins",11
+"178","humanity",182
+"179","humor",105
+"180","identity",113
+"181","illness",53
+"182","illusion",20
+"183","immigration",14
+"184","india",17
+"185","industrial design",29
+"186","inequality",94
+"187","infrastructure",49
+"188","innovation",229
+"189","insects",35
+"190","intelligence",50
+"191","interface design",28
+"192","Internet",84
+"193","interview",14
+"194","introvert",5
+"195","invention",140
+"196","investment",32
+"197","Iran",5
+"198","iraq",12
+"199","Islam",9
+"200","jazz",4
+"201","journalism",50
+"202","language",59
+"203","law",48
+"204","leadership",44
+"205","LGBT",14
+"206","library",18
+"207","life",111
+"208","literature",21
+"209","live music",80
+"210","love",39
+"211","MacArthur grant",13
+"212","machine learning",18
+"213","magic",18
+"214","manufacturing",16
+"215","map",16
+"216","marketing",21
+"217","Mars",12
+"218","materials",39
+"219","math",57
+"220","media",68
+"221","medical imaging",11
+"222","medical research",92
+"223","medicine",162
+"224","meditation",7
+"225","meme",5
+"226","memory",23
+"227","men",9
+"228","mental health",59
+"229","microbes",16
+"230","microbiology",31
+"231","microfinance",4
+"232","microsoft",3
+"233","Middle East",32
+"234","military",20
+"235","mind",71
+"236","mindfulness",5
+"237","mining",3
+"238","mission blue",22
+"239","mobility",7
+"240","molecular biology",32
+"241","money",32
+"242","monkeys",7
+"243","Moon",3
+"244","morality",22
+"245","motivation",63
+"246","movies",18
+"247","museums",13
+"248","music",140
+"249","nanoscale",24
+"250","narcotics",7
+"251","NASA",21
+"252","natural disaster",10
+"253","Natural resources",12
+"254","nature",116
+"255","neuroscience",89
+"256","New York",8
+"257","news",19
+"258","Nobel prize",3
+"259","nonviolence",6
+"260","novel",3
+"261","nuclear energy",10
+"262","nuclear weapons",4
+"263","obesity",11
+"264","oceans",77
+"265","oil",5
+"266","online video",23
+"267","open-source",34
+"268","origami",2
+"269","pain",9
+"270","painting",8
+"271","paleontology",10
+"272","pandemic",3
+"273","parenting",50
+"274","peace",54
+"275","performance",117
+"276","performance art",23
+"277","personal growth",96
+"278","personality",21
+"279","pharmaceuticals",21
+"280","philanthropy",33
+"281","philosophy",64
+"282","photography",92
+"283","physics",75
+"284","physiology",23
+"285","piano",15
+"286","Planets",27
+"287","plants",28
+"288","plastic",10
+"289","play",18
+"290","poetry",53
+"291","policy",51
+"292","politics",128
+"293","pollution",39
+"294","population",12
+"295","potential",73
+"296","poverty",59
+"297","prediction",13
+"298","pregnancy",8
+"299","presentation",14
+"300","primates",6
+"301","prison",19
+"302","privacy",16
+"303","product design",51
+"304","productivity",20
+"305","programming",20
+"306","prosthetics",17
+"307","protests",13
+"308","psychology",122
+"309","PTSD",10
+"310","public health",47
+"311","public spaces",18
+"312","race",43
+"313","refugees",12
+"314","relationships",29
+"315","religion",56
+"316","resources",5
+"317","rivers",8
+"318","robots",59
+"319","rocket science",8
+"320","sanitation",14
+"321","science",567
+"322","science and art",42
+"323","security",40
+"324","self",50
+"325","Senses",23
+"326","sex",34
+"327","sexual violence",10
+"328","shopping",7
+"329","sight",21
+"330","simplicity",14
+"331","singer",17
+"332","skateboarding",1
+"333","Slavery",10
+"334","sleep",4
+"335","smell",9
+"336","social change",218
+"337","social media",52
+"338","society",224
+"339","sociology",21
+"340","software",45
+"341","solar energy",16
+"342","solar system",17
+"343","sound",18
+"344","South America",14
+"345","space",60
+"346","speech",15
+"347","spoken word",15
+"348","sports",31
+"349","state-building",5
+"350","statistics",28
+"351","storytelling",120
+"352","street art",3
+"353","String theory",10
+"354","student",6
+"355","submarine",10
+"356","success",28
+"357","suicide",8
+"358","Surgery",13
+"359","Surveillance",21
+"360","sustainability",80
+"361","synthetic biology",13
+"362","Syria",8
+"363","teaching",43
+"364","technology",727
+"365","TED Books",17
+"366","TED Brain Trust",49
+"367","TED en Español",12
+"368","TED Fellows",143
+"369","TED Prize",27
+"370","TED Residency",6
+"371","TED-Ed",11
+"372","TEDMED",19
+"373","TEDNYC",19
+"374","TEDx",450
+"375","TEDYouth",24
+"376","telecom",8
+"377","telescopes",18
+"378","television",5
+"379","terrorism",38
+"380","testing",1
+"381","theater",16
+"382","time",17
+"383","toy",15
+"384","trafficking",6
+"385","Transgender",7
+"386","transportation",36
+"387","travel",10
+"388","trees",15
+"389","trust",11
+"390","typography",6
+"391","United States",30
+"392","universe",52
+"393","urban",4
+"394","urban planning",29
+"395","Vaccines",12
+"396","violence",69
+"397","violin",6
+"398","virtual reality",14
+"399","virus",12
+"400","visualizations",83
+"401","vocals",9
+"402","vulnerability",4
+"403","war",113
+"404","water",41
+"405","weather",13
+"406","web",43
+"407","wikipedia",8
+"408","wind energy",7
+"409","women",117
+"410","women in business",26
+"411","work",71
+"412","work-life balance",14
+"413","world cultures",19
+"414","writing",67
+"415","wunderkind",6
+"416","youth",38
