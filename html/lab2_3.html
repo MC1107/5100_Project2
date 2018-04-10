@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Clustered Force Layout</title>
+<body>
+<script src="//d3js.org/d3.v4.min.js"></script>
+<style>
+svg { border: solid #ccc 1px; }
+
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 200px;
+  height: 50px;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+body {
+    font-family: Sans-serif;
+    font-size: 13px;
+}
+
+.slice {
+    cursor: pointer;
+}
+
+.slice .main-arc {
+    stroke: #fff;
+    stroke-width: 1px;
+}
+
+.slice .hidden-arc {
+    fill: none;
+}
+
+.slice text {
+    pointer-events: none;
+    dominant-baseline: middle;
+    text-anchor: middle;
+}
+</style>  
+<script>
+
+    var widthDot = window.innerWidth;
+    var heightDot = window.innerHeight;
+    var maxRadiusDot = 10;
+    var minRadiusDot = 6;
+
+    var svg = d3.select("body").append("svg")
+                .attr("width", widthDot)
+                .attr("height", heightDot)
+                .append('g').attr('transform', 'translate(' + widthDot / 2 + ',' + heightDot / 2 + ')')
+                .on('click', () => focusOn());
+    
+    // for sunburst
+    const width = 400,
+            height = 400,
+            maxRadius = (Math.min(width, height) / 2) - 5;
+
+    const formatNumber = d3.format(',d');
+
+    const xScaler = d3.scaleLinear()
+        .range([0, 2 * Math.PI])
+        .clamp(true);
+
+    const yScaler = d3.scaleSqrt()
+        .range([maxRadius*.1, maxRadius]);
+
+    const color = d3.scaleOrdinal(d3.schemeCategory20);
+
+    const partition = d3.partition();
+
+    const arc = d3.arc()
+        .startAngle(d => xScaler(d.x0))
+        .endAngle(d => xScaler(d.x1))
+        .innerRadius(d => Math.max(0, yScaler(d.y0)))
+        .outerRadius(d => Math.max(0, yScaler(d.y1)));
+
+    const middleArcLine = d => {
+      const halfPi = Math.PI/2;
+      const angles = [xScaler(d.x0) - halfPi, xScaler(d.x1) - halfPi];
+      const r = Math.max(0, (yScaler(d.y0) + yScaler(d.y1)) / 2);
+
+      const middleAngle = (angles[1] + angles[0]) / 2;
+      const invertDirection = middleAngle > 0 && middleAngle < Math.PI; // On lower quadrants write text ccw
+      if (invertDirection) { angles.reverse(); }
+
+      const path = d3.path();
+      path.arc(0, 0, r, angles[0], angles[1], invertDirection);
+      return path.toString();
+    };
+
+    const textFits = d => {
+        const CHAR_SPACE = 6;
+
+        const deltaAngle = xScaler(d.x1) - xScaler(d.x0);
+        const r = Math.max(0, (yScaler(d.y0) + yScaler(d.y1)) / 2);
+        const perimeter = r * deltaAngle;
+
+        return d.data.name.length * CHAR_SPACE < perimeter;
+    };
+
+    function focusOn(d = { x0: 0, x1: 1, y0: 0, y1: 1 }) {
+    // Reset to top-level if no data point specified
+
+      const transition = svg.transition()
+          .duration(750)
+          .tween('scale', () => {
+              const xd = d3.interpolate(xScaler.domain(), [d.x0, d.x1]),
+                  yd = d3.interpolate(yScaler.domain(), [d.y0, 1]);
+              return t => { xScaler.domain(xd(t)); yScaler.domain(yd(t)); };
+          });
+
+      transition.selectAll('path.main-arc')
+          .attrTween('d', d => () => arc(d));
+
+      transition.selectAll('path.hidden-arc')
+          .attrTween('d', d => () => middleArcLine(d));
+
+      transition.selectAll('text')
+          .attrTween('display', d => () => textFits(d) ? null : 'none');
+
+      moveStackToFront(d);
+
+      //
+
+      function moveStackToFront(elD) {
+          svg.selectAll('.slice').filter(d => d === elD)
+              .each(function(d) {
+                  this.parentNode.appendChild(this);
+                  if (d.parent) { moveStackToFront(d.parent); }
+              })
+      }
+    }
+
+//end sunburst
+
+
+var m = 1; // number of distinct clusters
+
+var colorDot = d3.scaleOrdinal(d3.schemeCategory20)
+    .domain(d3.range(m));
+
+// The largest node for each cluster.
+var clusters = new Array(m);
+
+
+
+  var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+
+// function parseLine (line) {
+//   return { title: line["title"]};
+// }
+
+function getX() {
+  var seedX = Math.floor(Math.random() * widthDot) - widthDot / 2;
+  if(seedX < 100 && seedX > 0) seedX += 100;
+  else if (seedX > -100 && seedX < 0) seedX -= 100;
+
+  return seedX;
+}
+
+function getY() {
+  var seedY = Math.floor(Math.random() * heightDot) - heightDot / 2;
+  if(seedY < 100 && seedY > 0) seedY += 100;
+  else if (seedY > -100 && seedY < 0) seedY -= 100;
+
+  return seedY;
+
+}
+
+ function switchRadius(newRadius) {
+   return function() {
+     d3.selectAll('circle')
+        .filter(function(d,i) { return i === 5; })
+        .transition().duration(1000)
+        .tween('r', function(d) {
+          var that = d3.select(this);
+          var i = d3.interpolate(d.r, newRadius);
+          return function(t) {
+            d.radius = i(t);
+            that.attr('r', function(d) { return d.r; });
+            force.nodes(nodes)
+          }
+        });
+     force.alpha(1).restart();
+   }
+ }
+
+function openInNewTab(url) {
+  var win = window.open(url, '_blank');
+  win.focus();
+}
+
+function empty() {
+
+}
+
+
+
+svg.append('button').text('grow')
+  .on('click', switchRadius(100));
+
+svg.append('button').text('shrink')
+  .on('click', switchRadius(10));
+
+
+d3.queue()
+.defer(d3.csv, "ted_final.csv")
+// .defer(d3.csv, "ted.csv")
+.defer(d3.json, "dicipline.json")
+.await(callback);
+
+function callback (error, _ted_main1000, root) {
+
+  var nodes = _ted_main1000;
+  // console.log(root);
+  var rootVar = {};
+  nodes.unshift(rootVar);
+
+  nodes.forEach(function(d,i) {
+    if (i == 0) {
+      d.x = 0;
+      d.y = 0;
+      d.fx = 0;
+      d.fy = 0;
+      d.r = 200;
+      d.clicked = 0;
+      d.recommend = 0;
+
+      // d.cluster = 0;
+    }
+    else {
+      
+      // d.x = 0 + Math.floor(Math.random() * widthDot) - widthDot / 2;
+      d.x = getX();
+      // d.x = -widthDot/2;
+      // d.x = 0;
+      // d.y = 0 + Math.floor(Math.random() * heightDot) - heightDot / 2;
+      d.y = getY();
+      // d.y = -heightDot/2;
+      // d.y = 0;
+      d.vx = 0;
+      d.vy = 0;
+      // d.r = Math.sqrt((i + 1) / m * -Math.log(Math.random())) * maxRadiusDot;
+      d.r = 12;
+      d.clicked = 0;
+      d.recommend = 0;
+
+      // d.cluster = d.i;
+    }
+  
+    if (!clusters[d.i] || (d.r > clusters[d.i].radius)) {
+      clusters[d.i] = d;
+    }
+  });
+
+  console.log(nodes);
+  console.log(clusters);
+
+  // console.log(rawData);
+  var forceCollide = d3.forceCollide()
+    .radius(function(d,i) { 
+      if (i === 0) { return d.r + 10;}
+      else {return d.r + 1; }
+    })
+    .iterations(5);
+
+
+  var stren = 0.01;
+  const forceX = d3.forceX().strength(stren/2)
+  const forceY = d3.forceY().strength(stren)
+
+
+
+  var force = d3.forceSimulation()
+    .velocityDecay(0.2)
+    .nodes(nodes)
+    // .force('center', d3.forceCenter)
+    .force("collide", forceCollide)
+    // .force("cluster", forceCluster)
+    // .force("gravity", d3.forceManyBody(300))
+    // .force("r", d3.forceRadial(300))
+    .force("x", forceX)
+    .force("y", forceY)
+    .on("tick", tick);
+
+var str = nodes[80].url + " target=&quot;blank&quot;";
+console.log(str);
+
+  var circle = svg.append("g").selectAll("circle")
+    .data(nodes)
+    .enter()
+    // .append("a")
+    // .attr("xlink:href", function(d) { return d.url + " target=&quot;blank&quot;"; })
+    .append("circle")
+    .attr("r", function(d) { return d.r; })
+    // .style("fill", function(d) { return color(d.cluster); })
+    .style("fill", "#ccc")
+    .style("stroke","#333")
+
+    .on("mouseover", function(d,i) {
+      if(d.clicked != 0 && d.recommend != 0) {
+        d3.select(this)
+        .style("fill","orange");
+      }
+
+       div.transition()
+         .duration(50)
+         .style("opacity", .9);
+       div.html(i + "<br/>" + d.title)
+         .style("left", (d3.event.pageX) + "px")
+         .style("top", (d3.event.pageY - 28) + "px");
+       })
+
+     .on("mouseout", function(d) {
+      if(d.clicked != 0 && d.recommend != 0) {
+        d3.select(this)
+        .style("fill","#ccc");
+      }
+       div.transition()
+         .duration(100)
+         .style("opacity", 0);
+       })
+
+     .on("click",function(d,i) {
+
+      if (i != 0) {
+        d3.select(this)
+          .style("fill","red");
+        d.clicked = 1;
+
+        openInNewTab(d.url);
+
+
+//start  radius
+      var newRadius = 0;
+      d3.select(this)
+      .transition().duration(200)
+        .tween('radius', function(d) {
+          var that = d3.select(this);
+          var i = d3.interpolate(d.r, newRadius);
+          return function(t) {
+            d.r = i(t);
+            that.attr('r', function(d) { return d.r; });
+            force.nodes(nodes)
+          }
+        });
+     force.alpha(1).restart();
+
+//end
+      }
+
+      else if (i == 0) {
+        random(10);
+      }
+
+
+
+
+     });
+
+
+
+  function tick() {
+      circle
+      .attr("cx", function(d) { return d.x; })
+      .attr("cy", function(d) { return d.y; });
+      // .attr("r", function(d) { 
+        // var temp = Math.sqrt(d.x*d.x + d.y*d.y)/45;
+        // if(temp > maxRadiusDot && d.index != 0) {
+        //   return maxRadiusDot;
+        // }
+        // else if (temp < minRadiusDot && d.index != 0) {
+        //   return minRadiusDot;
+        // }
+        // else if (d.index != 0) return temp; 
+      // }
+      // );
+  }
+
+  function randomSingle(length,times,now) {
+  var lucky = Math.floor(Math.random() * length);
+  console.log(lucky);
+  d3.selectAll("circle")
+  .filter(function(d,i) { return i === lucky; })
+  .transition()
+  .duration(500)
+  .delay(500*now)
+  .style("fill","gold");
+  console.log(lucky + "should be red");
+
+  if(now != times - 1) {
+    d3.selectAll("circle")
+      .filter(function(d,i) { return i === lucky; })
+      .transition()
+      .duration(500)
+      .delay(500*now+500)
+      .style("fill","#ccc");
+  }
+  else {
+    d3.selectAll("circle")
+      .filter(function(d,i) { return i === lucky; })
+      .transition()
+      .duration(500)
+      .delay(500*now+500)
+      .style("fill","red")
+      .attr("recommend",1)
+      .call(function(d,i){d.recommend = 1;});
+
+
+  }
+  
+}
+
+
+function random(times) {
+  var length = nodes.length;
+        
+  for(var i = 0; i < times; i ++) {
+    randomSingle(length,times,i);
+  }
+}
+
+
+  //sunbrust
+  root = d3.hierarchy(root);
+  root.sum(d => d.size);
+
+  const slice = svg.selectAll('g.slice')
+      .data(partition(root).descendants());
+
+  slice.exit().remove();
+
+  const newSlice = slice.enter()
+      .append('g').attr('class', 'slice')
+      .on('click', d => {
+          d3.event.stopPropagation();
+          focusOn(d);
+      });
+
+  newSlice.append('title')
+      .text(d => d.data.name + '\n' + formatNumber(d.value));
+
+  newSlice.append('path')
+      .attr('class', 'main-arc')
+      .style('fill', d => color((d.children ? d : d.parent).data.name))
+      .attr('d', arc);
+
+  newSlice.append('path')
+      .attr('class', 'hidden-arc')
+      .attr('id', (_, i) => `hiddenArc${i}`)
+      .attr('d', middleArcLine);
+
+  const text = newSlice.append('text')
+      .attr('display', d => textFits(d) ? null : 'none');
+
+  // Add white contour
+  text.append('textPath')
+      .attr('startOffset','50%')
+      .attr('xlink:href', (_, i) => `#hiddenArc${i}` )
+      .text(d => d.data.name)
+      .style('fill', 'none')
+      .style('stroke', '#fff')
+      .style('stroke-width', 5)
+      .style('stroke-linejoin', 'round');
+
+  text.append('textPath')
+      .attr('startOffset','50%')
+      .attr('xlink:href', (_, i) => `#hiddenArc${i}` )
+      .text(d => d.data.name);
+
+};
+
+
+
+
+</script>
