@@ -1,3 +1,5 @@
+<p><b>Open the lab2_3.html</b></p>
+
 <p>Click the bubble to open the video.</p>
 <p>Move the mouse over the bubble to see the title of the talk.</p>
 <p>Click the Sunburst to select the disciplines.</p>
