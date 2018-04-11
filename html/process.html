@@ -1,0 +1,142 @@
+<html>
+<head>
+<title>LAB3</title>
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<style>
+
+svg { border: solid #ccc 1px; }
+
+
+</style>
+</head>
+<body>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+// d3.csv("ted_final_process.csv",function(d){
+//     var data = d;
+//     var hh = d;
+//     data.forEach(function(d,i){
+//         // console.log(d.tags);
+//         // var temp = [];
+//         // var test = "1,2,3"
+//         hh.tags = d.tags.split(',');
+
+
+//          // console.log(str);
+//     });
+//     // console.log(data);
+//     var datas = data.str;
+//     console.log(JSON.stringify(hh));
+// });
+
+d3.queue()
+.defer(d3.csv, "discipline.csv")
+.defer(d3.json, "1.json")
+.await(callback);
+
+function callback (error, discipline, sourse) {
+    var dis = discipline;
+    console.log(dis);
+    var sou = sourse;
+    sou.forEach(function(d,i){
+        var temp = d.tags.split(', ');
+        d.tags = temp;
+    });
+    console.log(sou);
+    sou.forEach(function(d,i){
+        var temp = d;
+        // var array1 = [];
+        // var array2 = [];
+        var array2 = [0,0,0,0,0,0];
+        var array1 = [0,0];
+        var array3 = [];
+        for (var i = 0; i < 19; i++) {
+            var tep = {"val":0,"root1":0,"root2":0};
+            array3.push(tep);
+        }
+        for (var j = 0; j < d.tags.length; j++) {
+            dis.forEach(function(d,i){
+                if(d.tags.indexOf(temp.tags[j])>=0) {array3[i].val++; }
+            });
+        }
+        array3[0].root1 = 0;
+        array3[0].root2 = 0;
+
+        array3[1].root1 = 0;
+        array3[1].root2 = 0;
+
+        array3[2].root1 = 0;
+        array3[2].root2 = 2;
+
+        array3[3].root1 = 0;
+        array3[3].root2 = 1;
+
+        array3[4].root1 = 0;
+        array3[4].root2 = 1;
+
+        array3[5].root1 = 0;
+        array3[5].root2 = 1;
+
+        array3[6].root1 = 0;
+        array3[6].root2 = 2;
+
+        array3[7].root1 = 0;
+        array3[7].root2 = 2;
+
+        array3[8].root1 = 0;
+        array3[8].root2 = 2;
+
+        array3[9].root1 = 0;
+        array3[9].root2 = 2;
+
+        array3[10].root1 = 0;
+        array3[10].root2 = 2; 
+        
+        array3[11].root1 = 1;
+        array3[11].root2 = 5;   
+
+        array3[12].root1 = 1;
+        array3[12].root2 = 5; 
+
+        array3[13].root1 = 1;
+        array3[13].root2 = 5;    
+
+
+        array3[14].root1 = 1;
+        array3[14].root2 = 5; 
+
+
+        array3[15].root1 = 1;
+        array3[15].root2 = 5; 
+
+        array3[16].root1 = 1;
+        array3[16].root2 = 4;
+
+        array3[17].root1 = 1;
+        array3[17].root2 = 3;
+
+        array3[18].root1 = 1;
+        array3[18].root2 = 3;
+
+        var temp2 =[];
+        for (var i = 0; i < 19; i++) {
+            temp2.push(array3[i].val);
+            if(array3[i].val > 0) {
+                array2[array3[i].root2] ++;
+                array1[array3[i].root1] ++;
+            }
+        }
+
+        d.array1 = array1;
+        d.array2 = array2;
+        d.array3 = temp2;
+    });
+    console.log(sou);
+};
+
+
+
+</script>

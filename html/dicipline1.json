@@ -1,0 +1,74 @@
+{
+        "name": "CLICK THE CENTER TO RANDOM", "children": [
+        {
+            "name": "science",
+            "index":1,
+            "children": [
+            {
+              "name": "natural science",
+              "index":5,
+               "children": [
+               {"name": "chemistry", "size": 4,"index":12} ,
+               {"name": "biology", "size": 4,"index":11} ,
+               {"name": "environmental_sciences", "size": 4,"index":13} ,
+               {"name": "space_sciences", "size": 4,"index":14} ,
+               {"name": "physics", "size": 4,"index":15}
+               ]
+            } ,
+            {
+              "name": "applied science",
+              "index":4,
+               "children": [
+               {"name": "technology", "size": 4,"index":16} ,
+               {"name": "medicine and health", "size": 4,"index":18}
+               ]
+            } ,
+            {
+              "name": "formal science",
+              "index":3,
+               "children": [
+               {"name": "mathematics&statistics", "size": 4,"index":17} ,
+               {"name": "medicine&health", "size": 4,"index":18}
+               ]
+            } ]
+          } ,
+
+          {
+            "name": "arts",
+            "index":0,
+            "children": [
+            {
+              "name": "social sciences",
+              "index":2,
+               "children": [
+               {"name": "sociology", "size": 4,"index":10} ,
+               {"name": "psychology", "size": 4,"index":9} ,
+               {"name": "political science", "size": 4,"index":8} ,
+               {"name": "economics", "size": 4,"index":7} ,
+               {"name": "anthropology", "size": 4,"index":6},
+               {"name": "history", "size": 4,"index":2}
+               ]
+            } ,
+            {
+              "name": "humanities",
+              "index":1,
+               "children": [
+               {"name": "theology", "size": 4,"index":5} ,
+               {"name": "philosophy", "size": 4,"index":4} ,
+               {"name": "literature", "size": 4,"index":3}
+               ]
+            } ,
+            {
+              "name": "art",
+              "index":0,
+               "children": [
+               {"name": "visual arts", "size": 4,"index":1} ,
+               {"name": "performing arts", "size": 4,"index":0}
+               ]
+            } ]
+          } 
+        ]
+    }
+
+
+

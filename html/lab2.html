@@ -1,0 +1,93 @@
+<html>
+<head>
+<title>LAB3</title>
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<style>
+
+svg { border: solid #ccc 1px; }
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 60px;
+  height: 28px;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+</style>
+</head>
+<body>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+    var width = window.innerWidth
+    var height = window.innerHeight
+
+
+
+    var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+    var color = d3.scaleOrdinal().range(d3.schemeCategory20);
+    
+    var stren = 0.01;
+    const forceX = d3.forceX(width / 2).strength(stren)
+    const forceY = d3.forceY(height / 2).strength(stren)
+
+    var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+
+    function ticked(e) {
+        svg.selectAll("circle")
+            .attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; });
+    };
+
+
+
+    d3.csv("ted_main.csv", function(error, data) {
+        var rawData = data;
+        console.log(data);
+
+        var force = d3.forceSimulation()
+        .velocityDecay(0.1)
+        .force("x", forceX)
+        .force("y", forceY)
+        .force("collide", d3.forceCollide().radius(function(d){
+          return d.r + 0.1;
+        }).iterations(5))
+        .nodes(data).on("tick", ticked);
+
+
+
+        svg.selectAll("circle")
+        .data(data)
+        .enter()
+        .attr("r", 10)
+        .style("fill", "#ccc")
+        .style("stroke","#333")
+        .on("mouseover", function(d) {
+        div.transition()
+         .duration(200)
+         .style("opacity", .9);
+       div.html(d.title)
+         .style("left", (d3.event.pageX) + "px")
+         .style("top", (d3.event.pageY - 28) + "px");
+       })
+     .on("mouseout", function(d) {
+       div.transition()
+         .duration(500)
+         .style("opacity", 0);
+       });
+   });
+
+</script>
