@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Clustered Force Layout</title>
+<head>
+  <script src="//d3js.org/d3.v4.min.js"></script>
+  <style>
+
+/*body*/
+  body {
+      background-color: black;
+      font-family: Sans-serif;
+      font-size: 13px;
+  }
+
+/*toop tip */
+  div.tooltip {
+    position: absolute;
+    text-align: left;
+    width: 200px;
+    height: 50px;
+    padding: 2px;
+    font: 12px sans-serif;
+    color: white;
+    background: black;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+  }
+
+.textbug {
+        font-size: 15px;
+
+}
+/*sunburst*/
+  .slice {
+      cursor: pointer;
+  }
+
+  .slice .main-arc {
+      stroke: #000;
+      stroke-width: 5px;
+  }
+
+  .slice .hidden-arc {
+      fill: none;
+  }
+
+  .slice text {
+      pointer-events: none;
+      dominant-baseline: middle;
+      text-anchor: middle;
+  }
+
+
+  </style>  
+</head>
+
+<body>
+<script>
+
+
+
+
+// dot system
+    var changeSize = 0;
+    var widthDot = window.innerWidth;
+    var heightDot = window.innerHeight;
+    var maxRadiusDot = 30 + changeSize;
+    var minRadiusDot = 4 +changeSize;
+
+
+//create the svg move it to center
+    const svg = d3.select("body").append("svg")
+                .attr("width", widthDot)
+                .attr("height", heightDot)
+                .append('g').attr('transform', 'translate(' + widthDot / 2 + ',' + heightDot / 2 + ')')
+                .on('click', () => focusOn()); // Reset zoom on canvas click
+
+
+    //sunburst
+    const width = 600,
+          height = 600,
+          maxRadius = (Math.min(width, height) / 2) - 5;
+
+    // change the string to integer
+    const formatNumber = d3.format(',d');
+
+    // x scale => to angle
+    // clamp means restrict the input into the range 
+    const xScaler = d3.scaleLinear()
+        .range([0, 2 * Math.PI])
+        .clamp(true);
+
+    // do sqrt at first and then map it to [maxRadius*.01, maxRadius]    
+    // const yScaler = d3.scalePow()  .exponent(1.5)
+    const yScaler = d3.scalePow()  .exponent(1.5)
+    // const yScaler = d3.scaleLinear()  
+        .range([maxRadius*.1, maxRadius]);
+
+    //set the color for sunburst 
+    //scaleOrdinal 123 123 123 
+    var color = d3.scaleOrdinal()
+                  .range(['#FF2400', '#ED2939', '#C21807','#ccc','#233']);
+
+    // partition to give the x and y
+    const partition = d3.partition();
+
+    const arc = d3.arc()
+        .startAngle(d => xScaler(d.x0))
+        // .startAngle(function(d){console.log(d);return xScaler(d.x0)})
+        .endAngle(d => xScaler(d.x1))
+        .innerRadius(d => Math.max(0, yScaler(d.y0)))
+        .outerRadius(d => Math.max(0, yScaler(d.y1)));
+
+    const middleArcLine = d => {
+      const halfPi = Math.PI/2;
+      const angles = [xScaler(d.x0) - halfPi, xScaler(d.x1) - halfPi];
+      const r = Math.max(0, (yScaler(d.y0) + yScaler(d.y1)) / 2);
+
+      const middleAngle = (angles[1] + angles[0]) / 2;
+      const invertDirection = middleAngle > 0 && middleAngle < Math.PI; // On lower quadrants write text ccw
+      if (invertDirection) { angles.reverse(); }
+
+      const path = d3.path();
+      path.arc(0, 0, r, angles[0], angles[1], invertDirection);
+      return path.toString();
+    };
+
+    const textFits = d => {
+        const CHAR_SPACE = 6;
+        // console.log(d);
+        const deltaAngle = xScaler(d.x1) - xScaler(d.x0);
+        const r = Math.max(0, (yScaler(d.y0) + yScaler(d.y1)) / 2);
+        const perimeter = r * deltaAngle;
+
+        return d.data.name.length * CHAR_SPACE < perimeter;
+    };
+
+//end sunburst
+
+//text
+   var shift = 20;
+   var textTED = svg.append("text")
+     .attr("text-anchor","middle")
+     .attr("id","text1")
+     .attr("x",30)
+     .attr("y",0-heightDot/2 + 40+shift)
+     .text("TED")
+     .style("font-family","Helvetica Neue")
+     .style("font-size","65px");
+
+    var text1 = svg.append("text")
+     .attr("text-anchor","middle")
+     .attr("id","text1")
+     .attr("x",0)
+     .attr("y",0-heightDot/2 + 40+shift)
+     .text("There are over 1000 \u00A0 \u00A0 \u00A0 \u00A0 \u00A0talks in the world.")
+     .style("font-family","Helvetica Neue")
+     .style("font-size","60px");
+
+    var text2 = svg.append("text")
+     .attr("text-anchor","middle")
+     .attr("id","text1")
+     .attr("x",0)
+     .attr("y",0-heightDot/2 + 40+shift*3)
+     .text("click on the subject you’re interested in or click on the bubbles for individual talks")
+     .style("font-family","Helvetica Neue")
+     .style("font-size","30px");
+
+     text1
+    .transition()
+    .duration(2500)
+    .style("fill","white");
+
+    text2
+    .transition()
+    .duration(2500)
+    .style("fill","white");
+
+    text2
+    .transition()
+    .duration(2500)
+    .delay(8000)
+    .style("opacity",0);
+
+    text2
+    .transition()
+    .duration(2500)
+    .delay(10000)
+    .remove();
+
+    textTED
+    .transition()
+    .duration(2500)
+    .style("fill","white");
+
+    textTED
+    .transition()
+    .duration(1500)
+    .delay(2000)
+    .style("fill","red");
+
+//textend
+
+
+//tool tip
+  var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+//end tool tip
+
+
+// bubbles
+
+function get() {
+  var seed = (Math.random() * 360);
+  var array = [];
+  var x = 800 * Math.cos(seed);
+  var y = 800 * Math.sin(seed);
+  array.push(x);
+  array.push(y);
+  return array;
+}
+
+function openInNewTab(url) {
+  var win = window.open(url, '_blank');
+  win.focus();
+}
+
+// read in the data
+d3.queue()
+  .defer(d3.csv, "ted_final.csv")
+  .defer(d3.json, "dicipline1.json")
+  .defer(d3.csv, "discipline.csv")
+  .defer(d3.json, "1.json")
+  .await(callback);
+
+
+// call back function
+function callback (error, _ted_main1000, root,discipline, sourse) {
+
+  var nodes = _ted_main1000;
+  var rootVar = {};
+  nodes.unshift(rootVar);
+
+  // preprocess the data
+
+  var dis = discipline;
+  console.log(dis);
+  var sou = sourse;
+  sou.forEach(function(d,i){
+      var temp = d.tags.split(', ');
+      d.tags = temp;
+  });
+  console.log(sou);
+  sou.forEach(function(d,i){
+      var temp = d;
+      var array2 = [0,0,0,0,0,0];
+      var array1 = [0,0];
+      var array3 = [];
+      for (var i = 0; i < 19; i++) {
+          var tep = {"val":0,"root1":0,"root2":0};
+          array3.push(tep);
+      }
+      for (var j = 0; j < d.tags.length; j++) {
+          dis.forEach(function(d,i){
+              if(d.tags.indexOf(temp.tags[j])>=0) {array3[i].val++; }
+          });
+      }
+      array3[0].root1 = 0;
+      array3[0].root2 = 0;
+
+      array3[1].root1 = 0;
+      array3[1].root2 = 0;
+
+      array3[2].root1 = 0;
+      array3[2].root2 = 2;
+
+      array3[3].root1 = 0;
+      array3[3].root2 = 1;
+
+      array3[4].root1 = 0;
+      array3[4].root2 = 1;
+
+      array3[5].root1 = 0;
+      array3[5].root2 = 1;
+
+      array3[6].root1 = 0;
+      array3[6].root2 = 2;
+
+      array3[7].root1 = 0;
+      array3[7].root2 = 2;
+
+      array3[8].root1 = 0;
+      array3[8].root2 = 2;
+
+      array3[9].root1 = 0;
+      array3[9].root2 = 2;
+
+      array3[10].root1 = 0;
+      array3[10].root2 = 2; 
+      
+      array3[11].root1 = 1;
+      array3[11].root2 = 5;   
+
+      array3[12].root1 = 1;
+      array3[12].root2 = 5; 
+
+      array3[13].root1 = 1;
+      array3[13].root2 = 5;    
+
+
+      array3[14].root1 = 1;
+      array3[14].root2 = 5; 
+
+
+      array3[15].root1 = 1;
+      array3[15].root2 = 5; 
+
+      array3[16].root1 = 1;
+      array3[16].root2 = 4;
+
+      array3[17].root1 = 1;
+      array3[17].root2 = 3;
+
+      array3[18].root1 = 1;
+      array3[18].root2 = 3;
+
+      var temp2 =[];
+      for (var i = 0; i < 19; i++) {
+          temp2.push(array3[i].val);
+          if(array3[i].val > 0) {
+              array2[array3[i].root2] ++;
+              array1[array3[i].root1] ++;
+          }
+      }
+
+      d.array1 = array1;
+      d.array2 = array2;
+      d.array3 = temp2;
+    });
+
+// end preprocess 
+
+
+// initialize the bubbles
+  nodes.forEach(function(d,i) {
+    if (i == 0) {
+      d.x = 0;
+      d.y = 0;
+      d.fx = 0;
+      d.fy = 0;
+      d.r = width/2;
+      d.clicked = 0;
+      d.recommend = 0;
+      d.over = 0;
+      d.scaler = 1.2;
+      d.shrink = 0;
+    }
+    else {
+      var arrayXY = get();
+      d.x = arrayXY[0];
+      d.y = arrayXY[1];
+      d.vx = 0;
+      d.vy = 0;
+      d.r = 12;
+      d.clicked = 0;
+      d.recommend = 0;
+      d.over = 0;
+      d.scaler = 3;
+      d.shrink = 0;
+
+      d.array1 = sou[i-1].array1;
+      d.array2 = sou[i-1].array2;
+      d.array3 = sou[i-1].array3;
+      d.array = [];
+      d.array.push(d.array1);
+      d.array.push(d.array2);
+      d.array.push(d.array3);
+    }
+  });
+// initialize end 
+
+//initialize the collide
+  var forceCollide = d3.forceCollide()
+    .radius(function(d,i) { 
+      if (i === 0) { return d.r + 10;}
+      else {return d.r*1.2; }
+    })
+    .iterations(5);
+
+// force parameters
+  var stren = 0.016;
+  const forceX = d3.forceX().strength(stren/3)
+  const forceY = d3.forceY().strength(stren)
+
+//initiallize the force simulation
+  var force = d3.forceSimulation()
+    .velocityDecay(0.3)
+    .nodes(nodes)
+    .force("collide", forceCollide)
+    .force("x", forceX)
+    .force("y", forceY)
+    .on("tick", tick);
+
+// draw the bubbles
+  var circle = svg.append("g").selectAll("circle")
+    .data(nodes)
+    .enter()
+    .append("circle")
+    .attr("r", function(d,i) { return d.r; })
+    .style("fill", "black")
+    .style("stroke",function(d,i){
+      if(i == 0) return "red";
+      else return "#333";
+    })
+    .on("mouseover", function(d,i) {          //mouse over 
+      d.over = 1;
+      if(d.clicked == 0 && d.recommend == 0) {
+        var that = d3.select(this);
+        var colorSave = d3.hsl(that.style("fill"));
+        that        
+        .transition().duration(function(d,i){
+          if(i == 0) return 400;
+          else return 0;
+        })
+        .style('fill', function(d) {
+          colorSave.s = 1;
+          return colorSave;
+        })
+        .attr("r", function (d,i){
+            d.r = d.r*d.scaler;
+            return d.r;
+        });
+        force.nodes(nodes)
+        force.alpha(0.3).restart();
+
+      }
+
+       div.transition()
+         .duration(50)
+         .style("opacity", .8);
+       div.html("Author: " + d.main_speaker + "<br/>" + "Title: " + d.title) //tool tip
+         .style("left", (d3.event.pageX+40) + "px")
+         .style("top", (d3.event.pageY - 60) + "px");
+       })
+     .on("mouseout", function(d) { // mouse out function
+      d.over = 0;
+      if(d.clicked == 0 && d.recommend == 0) {
+        var that = d3.select(this);
+        var colorSave = d3.hsl(that.style("fill"));
+        that        
+        .transition().duration(200)
+        .style('fill', function(d) {
+          colorSave.s = 0.5;
+          return colorSave;
+        })
+        .attr("r", function (d,i){
+            d.r = d.r/d.scaler;
+            return d.r;
+        });
+        force.nodes(nodes);
+        force.alpha(0.3).restart();
+      }
+       div.transition()
+         .duration(100)
+         .style("opacity", 0);
+       })
+     .on("click",function(d,i) {  // click 
+      if (i != 0) {
+        d3.select(this)
+          .style("fill","red");
+        d.clicked = 1;
+        openInNewTab(d.url);
+        var newRadius = 0;
+        d3.select(this)
+          .transition().duration(200)
+          .tween('radius', function(d) {  
+            var that = d3.select(this);
+            var i = d3.interpolate(d.r, newRadius);
+            return function(t) {
+              d.r = i(t);
+              that.attr('r', function(d) { return d.r; });
+              force.nodes(nodes)
+            }
+          });
+        force.alpha(0.3).restart();
+      }
+      else if (i == 0) { // click the center triger the random
+        random(5);
+      }
+     });
+
+  function tick() {
+
+
+      circle
+      .attr("cx", function(d) { return d.x; })
+      .attr("cy", function(d) { return d.y; })
+      .attr("r", function(d,i) { 
+        var thisnode = nodes[i];
+        if(i == 0) {
+          return thisnode.r;
+        }
+      
+        //size system the closer the smaller 
+        var temp = Math.sqrt(d.x*d.x + d.y*d.y)/50 + changeSize + d.views/2000000;
+        if(temp > maxRadiusDot && thisnode.clicked == 0 &&thisnode.index != 0 && thisnode.over == 0 && thisnode.recommend == 0 && thisnode.shrink == 0) {
+          thisnode.r = maxRadiusDot;
+          return maxRadiusDot;
+        }
+        else if (temp < minRadiusDot && thisnode.clicked == 0 && thisnode.index != 0 && thisnode.over == 0 && thisnode.recommend == 0 && thisnode.shrink == 0) {
+          thisnode.r = minRadiusDot;
+          return minRadiusDot;
+        }
+        else if (thisnode.index != 0 && thisnode.clicked == 0 && thisnode.over == 0 && thisnode.recommend == 0 && thisnode.shrink == 0) 
+        {
+          thisnode.r = temp;
+          return temp;
+        }
+        else {
+          return thisnode.r;
+        } 
+      })
+      .style("fill",function(d,i) {
+        var thisnode = nodes[i];
+        if(thisnode.over == 0 && thisnode.recommend == 0 && i!=0 && thisnode.shrink == 0) {
+          var temp = Math.sqrt(d.x*d.x + d.y*d.y)/35 + changeSize/2.5;
+          return d3.hsl(360,1-temp/25,0.5,0.8);
+        }
+        else return d3.select(this).style("fill");
+      });
+  force.nodes(nodes);
+  }
+
+
+// random function
+  function randomSingle(length,times,now) {
+    var lucky = Math.floor(Math.random() * length);
+    var that = d3.selectAll("circle")
+                 .filter(function(d,i) { return i === lucky; });
+    var colorSave = d3.hsl(that.style("fill"));
+    var brighter = colorSave;
+    brighter.s = 1;
+    var delay = 500;
+
+    that
+    .transition()
+    .duration(delay)
+    .delay(delay*now*2)
+    .style("fill","red")
+    .attr("r", function (d,i){
+              d.recommend = 1;
+              d.r = d.r*d.scaler;
+              return d.r;
+          });
+    force.nodes(nodes)
+    force.alpha(0.3).restart();
+}
+
+
+function random(times) {
+  var length = nodes.length;
+        
+  for(var i = 0; i < times; i ++) {
+    randomSingle(length,times,i);
+    
+  }
+}
+
+
+//sunbrust
+  var currentDepth = 0; //1 zoom in 0 zoom out 
+  root = d3.hierarchy(root);
+  // console.log(root);
+  root.sum(d => d.size);
+
+  const slice = svg.selectAll('g.slice')
+      .data(partition(root).descendants());
+
+      console.log(partition(root).descendants());
+
+  slice.exit().remove();
+
+  const newSlice = slice.enter()
+      .append('g').attr('class', 'slice')
+      .on('click', d => {
+
+        var direction = d.depth > currentDepth ? 1 : 0;
+        currentDepth = d.depth;
+        changeSize = currentDepth *3;
+        maxRadiusDot = 50 + changeSize;
+        minRadiusDot = 6 +changeSize;
+        console.log(currentDepth);
+        var sliceData = d;
+        console.log(d);
+        d3.event.stopPropagation();
+        focusOn(d);
+
+        if(currentDepth != 0) {
+          d3.selectAll("circle")
+          .filter(function(d,i){
+            if(i == 0) return 0;
+            var thisNode = nodes[i];
+            var depthIndex = sliceData.depth-1;
+            var Index = sliceData.data.index;
+            if(thisNode.array[depthIndex][Index] >1)
+            { 
+              console.log("win");
+              if(direction == 1) {return 0;}
+              else if (direction == 0) {
+                d.shrink = 0;
+                return 1;
+              }
+            }
+            else {
+              if(direction == 1) {return 1;}
+              else if (direction == 0) {return 0;}
+            }
+          })
+          .attr("r",function(d){
+            if(direction == 1) {d.shrink = 1;}
+              d.r = 0;
+              return d.r;
+          });
+          force.alpha(0.5).restart();
+        }
+
+        else {
+            d3.selectAll("circle")
+              .filter(function(d,i){
+                console.log("win");
+                d.shrink = 0;
+                return 0;
+              })
+        }
+
+      });
+
+
+  newSlice.append('title')
+      .text(d => d.data.name + '\n' + formatNumber(d.value));
+
+  newSlice.append('path')
+      .attr('class', 'main-arc')
+      .style('fill', function(d){
+// if(d.depth == 0) return "ccc";
+
+        if(d.depth == 1) {
+          if(d.data.index == 0) {
+            return "B200FF";
+          }
+          else {
+            return "BCFF00";
+          }
+
+        }
+        else if(d.depth == 2) {
+          if(d.data.index < 3) {
+            return "A100AD";
+
+          }
+          else {
+            return "4CAD00";
+
+          }
+
+        }
+
+        else if(d.depth == 3) {
+          if(d.data.index < 11) {
+            return "610069";
+
+          }
+          else {
+            return "2E6900";
+
+          }
+
+        }
+      })
+      .attr('d', arc);
+
+  newSlice.append('path')
+    .attr('class', 'hidden-arc')
+    .attr('id', (_, i) => `hiddenArc${i}`)
+    .attr('d', middleArcLine);
+
+  const text = newSlice.append('text')
+                        .style("fill", "#ccc")
+                        .attr("class","textbug")
+                        .attr('display', d => textFits(d) ? null : 'none');
+
+  // Add white contour
+  // text.append('textPath')
+  //     .attr('startOffset','50%')
+  //     .attr('xlink:href', (_, i) => `#hiddenArc${i}` )
+  //     .text(d => d.data.name)
+  //     .style('fill', 'none')
+  //     .style('stroke', '#fff')
+  //     .style('stroke-width', 5)
+  //     .style('stroke-linejoin', 'round');
+
+  text.append('textPath')
+      .attr('startOffset','50%')
+      .attr('xlink:href', (_, i) => `#hiddenArc${i}` )
+      .text(d => d.data.name);
+
+
+};
+
+function focusOn(d = { x0: 0, x1: 1, y0: 0, y1: 1 }) {
+  // Reset to top-level if no data point specified
+
+  console.log(d);
+    const transition = svg.transition()
+        .duration(750)
+        .tween('scale', () => {
+            const xd = d3.interpolate(xScaler.domain(), [d.x0, d.x1]),
+                yd = d3.interpolate(yScaler.domain(), [d.y0, 1]);
+            return t => { xScaler.domain(xd(t)); yScaler.domain(yd(t)); };
+        });
+
+    transition.selectAll('path.main-arc')
+        .attrTween('d', d => () => arc(d));
+
+    transition.selectAll('path.hidden-arc')
+        .attrTween('d', d => () => middleArcLine(d));
+
+    transition.selectAll('.textbug')
+        .attrTween('display', d => () => textFits(d) ? null : 'none');
+
+    moveStackToFront(d);
+
+    function moveStackToFront(elD) {
+        svg.selectAll('.slice').filter(d => d === elD)
+            .each(function(d) {
+                this.parentNode.appendChild(this);
+                if (d.parent) { moveStackToFront(d.parent); }
+            })
+    }
+  }
+
+
+
+</script>
